@@ -1,0 +1,36 @@
+#### Very simple windows devops script ####
+Author: Steve Irvine
+
+#### Use at your own risk
+
+This script can be given a series of folders containing text based server lists and powershell script fragments.
+
+For example if you created the following folder structure:
+
+root
+test.ps1
+|application1
+|	|
+|	|environment1
+|	|
+|	|environment2
+|
+|application2
+|       |
+|       |environment1
+|
+...
+
+
+Where the root contains a powershell script fragment called test.ps1 which contains global setup steps. Each application folder contains a powershell script fragment test.ps1 containing setup steps for a specific application e.g. web servers, or database servers, and each environment* folder contained a txt file list of server names for a specific environment e.g. test or prod.
+
+This allows one to run: 
+
+.\remoting.ps1 application1 environment2 
+
+The script will then concatenate the two script files, then use invoke-command to create an object on the remote file system and pipe in the script file assembled from the fragments. After this the script will be executed remotely as a background job until the number of concurrent jobs equals the $MaxThreads value in remoting.ps1. Then the system will wait for one of the scripts to complete before launching another. 
+
+It attempts to create a progress bar to denote progress.
+
+
+
