@@ -21,8 +21,11 @@ $Computers = Get-Content ".\$application\$environment\servers.txt"
 $credentials = Get-Credential
 $destinationpath = "c:\install\test1.ps1"
 
+#Grab the content from the first script and hold
 $content = Get-Content -path ".\test1.ps1"
 
+#Based on the value of the second argument to the script
+#Append the content of an application specific scripts
 if (Test-Path ".\$application\test1.ps1"){
 	$appcontent = Get-Content ".\$application\test1.ps1"
 	$content += $appcontent
@@ -40,7 +43,8 @@ ForEach ($Computer in $Computers){
         Write-Progress  -Activity "Creating Server List" -Status "Waiting for threads to close" `
 	-CurrentOperation "$i threads created - $($(Get-Job -state running).count) threads open "`
 	-PercentComplete ($i / $Computers.count * 100)
-        Start-Sleep -Milliseconds $SleepTimer
+        
+	Start-Sleep -Milliseconds $SleepTimer
 }
 
     #"Starting job - $Computer"
@@ -71,13 +75,16 @@ $Complete = Get-date
 
 While ($(Get-Job -State Running).count -gt 0){
     $ComputersStillRunning = ""
+    
     ForEach ($System  in $(Get-Job -state running)){$ComputersStillRunning += ", $($System.name)"}
-    $ComputersStillRunning = $ComputersStillRunning.Substring(2)
-    Write-Progress  -Activity "Deploying Scripts" -Status "$($(Get-Job -State Running).count) threads remaining" `
-    -CurrentOperation "$ComputersStillRunning" -PercentComplete ($(Get-Job -State Completed).count / $(Get-Job).count * 100)
-    If ($(New-TimeSpan $Complete $(Get-Date)).totalseconds -ge $MaxWaitAtEnd)`
-    {"Killing all jobs still running . . .";Get-Job -State Running | Remove-Job -Force}
-    Start-Sleep -Milliseconds $SleepTimer
+    	
+	$ComputersStillRunning = $ComputersStillRunning.Substring(2)
+    	Write-Progress  -Activity "Deploying Scripts" -Status "$($(Get-Job -State Running).count) threads remaining" `
+    	-CurrentOperation "$ComputersStillRunning" -PercentComplete ($(Get-Job -State Completed).count / $(Get-Job).count * 100)
+    
+    	If ($(New-TimeSpan $Complete $(Get-Date)).totalseconds -ge $MaxWaitAtEnd)`
+    		{"Killing all jobs still running . . .";Get-Job -State Running | Remove-Job -Force}
+    	Start-Sleep -Milliseconds $SleepTimer
 }
 
 #Build a log file name
@@ -87,4 +94,3 @@ $deploylog = ".\Logs\$env:username-$application-$environment-$(get-date -format 
 get-job | receive-job | out-file $deploylog 
 
 Write-Host "Deployment Complete, logs at $deploylog"
-
