@@ -55,13 +55,13 @@ Invoke-Command -ComputerName $Computer -ScriptBlock `
 	{param($destinationpath) new-item -Path $destinationpath -force -type file} `
 	-Credential $credentials -argumentlist $destinationpath 
 	
-	#Pipe the content of the source file to it serially 
+	#Pipe the content of the source file to it 
 Invoke-Command -ComputerName $Computer -ScriptBlock `
 	{ param ($destinationpath, $content) Add-Content -Path $destinationpath -Value $content } `
 	-Credential $credentials -argumentlist $destinationpath, $content
 	
-	#Run the script we've just copied, this could take a long time
-	#so I make it a thread and run it in the background with the -asjob parameter
+	#Run the script made, this could take a long time
+	#so make it a thread and background it with the -asjob parameter
 Invoke-Command -asjob -ComputerName $Computer -ScriptBlock  `
 	{param($destinationpath) powershell -executionpolicy remotesigned $destinationpath}`
 	 -Credential $credentials -argumentlist $destinationpath
