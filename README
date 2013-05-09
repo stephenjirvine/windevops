@@ -32,5 +32,6 @@ The script will then concatenate the two script files, then use invoke-command t
 
 It attempts to create a progress bar to denote progress.
 
+This script was used with a series of Powershell Modules to perform most functions. This means that script fragments could be kept short and readable.
 
-
+The Modules were too specific to my previous employers to be used here but I'd be happy to add people to this project to build some more.
